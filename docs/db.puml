@@ -1,0 +1,69 @@
+@startuml db
+
+title Database Models
+
+entity Position {
+  *id: uuid
+  ---
+  *name: string
+}
+
+entity User {
+  *id: uuid
+  ---
+  *email: string
+  *username: string
+}
+
+entity Team {
+  *id: uuid
+  ---
+  *userId: uuid
+  *name: string
+}
+
+entity Player {
+  *id: uuid
+  ---
+  *teamId: uuid
+  name: string
+}
+
+entity PlayerPosition {
+  *id: uuid
+  ---
+  *playerId: uuid
+  *positionId: uuid
+  *weight: int
+}
+
+entity Game {
+  *id: uuid
+  ---
+  *teamId: uuid
+  *name: string
+}
+
+entity Roster {
+  *id: uuid
+  ---
+  *gameId: uuid
+}
+
+entity RosterPlayer {
+  *id: uuid
+  ---
+  *rosterId: uuid
+  *playerId: uuid
+}
+
+User }o-- Team
+Team }|-- Game
+Team }|-- Player
+Game ||-- Roster
+Roster }|-- RosterPlayer
+Player }|-- RosterPlayer
+Position }|-- PlayerPosition
+Player }|-- PlayerPosition
+
+@enduml

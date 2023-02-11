@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  username String
+  Team     Team[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Team {
+  id     String   @id @default(uuid())
+  user   User?    @relation(fields: [userId], references: [id])
+  userId String?  @map("user_id")
+  Player Player[]
+  Game   Game[]
+
+  @@index([userId])
+  @@map("teams")
+}
+
+model Player {
+  id             String           @id @default(uuid())
+  team           Team             @relation(fields: [teamId], references: [id])
+  teamId         String           @map("team_id")
+  RosterPlayer   RosterPlayer[]
+  PlayerPosition PlayerPosition[]
+
+  @@index([teamId])
+  @@map("players")
+}
+
+model Game {
+  id     String   @id @default(uuid())
+  team   Team?    @relation(fields: [teamId], references: [id])
+  teamId String   @map("team_id")
+  name   String
+  Roster Roster[]
+
+  @@index([teamId])
+  @@map("games")
+}
+
+model Roster {
+  id           String         @id @default(uuid())
+  game         Game           @relation(fields: [gameId], references: [id])
+  gameId       String         @map("game_id")
+  RosterPlayer RosterPlayer[]
+
+  @@index([gameId])
+  @@map("rosters")
+}
+
+model RosterPlayer {
+  id       String @id @default(uuid())
+  roster   Roster @relation(fields: [rosterId], references: [id])
+  rosterId String @map("roster_id")
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId String @map("player_id")
+
+  @@index([rosterId, playerId])
+  @@map("roster_player")
+}
+
+model Position {
+  id             String           @id @default(uuid())
+  name           String
+  PlayerPosition PlayerPosition[]
+}
+
+model PlayerPosition {
+  id         String   @id @default(uuid())
+  player     Player   @relation(fields: [playerId], references: [id])
+  playerId   String   @map("player_id")
+  position   Position @relation(fields: [positionId], references: [id])
+  positionId String   @map("position_id")
+  weight     Int
+}
