@@ -57,6 +57,20 @@ entity RosterPlayer {
   *playerId: uuid
 }
 
+entity Lineup {
+  *id: uuid
+  ---
+  *rosterId: uuid
+  *period: int
+}
+
+entity LineupPosition {
+  *id: uuid
+  ---
+  *lineupId: uuid
+  *playerPositionId: uuid
+}
+
 User }o-- Team
 Team }|-- Game
 Team }|-- Player
@@ -65,5 +79,7 @@ Roster }|-- RosterPlayer
 Player }|-- RosterPlayer
 Position }|-- PlayerPosition
 Player }|-- PlayerPosition
+Roster }o-- Lineup
+Lineup }|-- LineupPosition
 
 @enduml
