@@ -3,6 +3,7 @@ import Team from "@/lib/models/team";
 export async function getTeams(userId: string): Promise<Team[]> {
   return await Promise.resolve([
     {
+      id: "foo",
       name: "Team1",
       players: [
         {
@@ -17,6 +18,7 @@ export async function getTeams(userId: string): Promise<Team[]> {
       games: []
     },
     {
+      id: "bar",
       name: "Team2",
       players: [
         {
@@ -35,6 +37,7 @@ export async function getTeams(userId: string): Promise<Team[]> {
 
 export async function getTeam(userId: string, teamId: string): Promise<Team> {
   return await Promise.resolve({
+    id: "foo",
     name: "Team1",
     players: [
       {

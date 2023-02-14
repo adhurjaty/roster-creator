@@ -1,7 +1,8 @@
-import ListItemView from '@/components/ListItemView';
+import ListItemView from '@/components/list/ListItemView';
 
 interface ListItem {
   key?: string;
+  location?: string;
   name: string;
 }
 

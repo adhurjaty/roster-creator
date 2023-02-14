@@ -4,8 +4,9 @@ import { useQuery } from 'react-query';
 import { getTeams } from '@/lib/apiInterface/teamsRepo';
 import Team from '@/lib/models/team';
 
-import ListView from '@/components/ListView';
-import LoadingSpinner from '@/components/LoadingSpinner';
+import Layout from '@/components/layout/Layout';
+import ButtonLink from '@/components/links/ButtonLink';
+import ListView from '@/components/list/ListView';
 
 const TeamsPage = () => {
   const {
@@ -16,14 +17,21 @@ const TeamsPage = () => {
   } = useQuery<Team[], Error>('teams', () => getTeams('foo'));
 
   return (
-    <div>
-      {(isLoading && <LoadingSpinner />) || (
-        <>
-          <h1>Teams</h1>
-          <ListView list={teams ?? []} />
-        </>
-      )}
-    </div>
+    <Layout title='Teams' isLoading={isLoading} isError={isError} error={error}>
+      <>
+        <ListView
+          list={
+            teams?.map((x) => ({
+              ...x,
+              location: `/teams/${x.id}`,
+            })) ?? []
+          }
+        />
+        <ButtonLink href='/teams/create' className='w-md my-2'>
+          Create new team
+        </ButtonLink>
+      </>
+    </Layout>
   );
 };
 
