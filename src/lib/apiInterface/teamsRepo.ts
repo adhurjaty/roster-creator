@@ -52,3 +52,7 @@ export async function getTeam(userId: string, teamId: string): Promise<Team> {
     games: []
   });
 }
+
+export async function createTeam(userId: string, team: Team): Promise<Response> {
+  await Promise.resolve({});
+}

@@ -7,8 +7,8 @@ import PageTitle from '@/components/PageTitle';
 interface Props {
   children: React.ReactNode;
   title: string;
-  isLoading: boolean;
-  isError: boolean;
+  isLoading?: boolean;
+  isError?: boolean;
   error?: Error | null;
 }
 
@@ -27,9 +27,5 @@ export default function Layout({
     </>
   );
 
-  return (
-    <div className='flex flex-col items-center justify-center'>
-      {(isLoading && <LoadingSpinner />) || loadedContent}
-    </div>
-  );
+  return <div>{(isLoading && <LoadingSpinner />) || loadedContent}</div>;
 }

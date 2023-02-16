@@ -1,6 +1,7 @@
-import PlayerPosition from "@/lib/models/playerPosition"
+import Position from "@/lib/models/position";
 
 export default interface Player {
-  name: string
-  positions: PlayerPosition[]
+  id?: string;
+  name: string;
+  positions: Position[];
 }

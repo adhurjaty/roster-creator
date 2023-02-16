@@ -18,7 +18,7 @@ const TeamsPage = () => {
 
   return (
     <Layout title='Teams' isLoading={isLoading} isError={isError} error={error}>
-      <>
+      <div className='flex flex-col items-center justify-center'>
         <ListView
           list={
             teams?.map((x) => ({
@@ -30,7 +30,7 @@ const TeamsPage = () => {
         <ButtonLink href='/teams/create' className='w-md my-2'>
           Create new team
         </ButtonLink>
-      </>
+      </div>
     </Layout>
   );
 };
