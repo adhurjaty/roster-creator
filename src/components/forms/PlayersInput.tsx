@@ -2,107 +2,103 @@ import { err, ok } from 'neverthrow';
 import { useState } from 'react';
 
 import Player from '@/lib/models/player';
-import Position from '@/lib/models/position';
 
 import Button from '@/components/buttons/Button';
 import EditPlayer from '@/components/forms/EditPlayer';
-
-interface PlayerView {
-  id?: number;
-  name: string;
-  positions: Position[];
-}
+import PlayerRow from '@/components/forms/PlayerRow';
+import PlayerView from '@/components/viewModels/playerView';
 
 interface Props {
   onChange: (players: Player[]) => void;
 }
 
-function addOrEditPlayer(
-  player: PlayerView,
-  players: PlayerView[]
-): PlayerView[] {
-  const playerViews = players.map((p) => (p.id === player.id ? player : p));
-
-  if (player.id === undefined) {
-    playerViews.push({
-      ...player,
-      id:
-        players.reduce((max, p) => {
-          const value = p.id ?? -1;
-          return value > max ? value : max;
-        }, -1) + 1,
-    });
-  }
-
-  return playerViews;
-}
-
 const PlayersInput = ({ onChange }: Props) => {
   const [players, setPlayers] = useState<PlayerView[]>([]);
-  const [editPlayer, setEditPlayer] = useState<PlayerView | null>(null);
+  const [newPlayer, setNewPlayer] = useState<PlayerView | null>(null);
 
-  const onEditPlayer = (player: PlayerView) => {
-    const playerViews = addOrEditPlayer(player, players);
+  const validateUniqueNames = (ps: PlayerView[], name: string) => {
+    return !ps.find((p) => p.name === name);
+  };
 
-    if (playerViews.filter((p) => p.name === player.name).length > 1) {
+  const onUpdatePlayer = (player: PlayerView) => {
+    const idx = players.findIndex((p) => player.id === p.id);
+
+    if (idx < 0) {
+      return err<null, string>('Could not find player');
+    }
+
+    if (
+      !validateUniqueNames(
+        [...players.slice(0, idx), ...players.slice(idx + 1)],
+        player.name
+      )
+    ) {
       return err<null, string>(`Player: ${player.name} already exists`);
     }
 
-    setPlayers([...playerViews]);
+    const updatedPlayers = [
+      ...players.slice(0, idx),
+      player,
+      ...players.slice(idx + 1),
+    ];
+    setPlayers(updatedPlayers);
     onChange(
-      playerViews.map((p) => ({
+      updatedPlayers.map((p) => ({
         name: p.name,
         positions: p.positions,
       }))
     );
-    setEditPlayer(null);
-
     return ok(null);
   };
 
-  const onCancel = () => {
-    setEditPlayer(null);
+  const onCreatePlayer = (player: PlayerView) => {
+    if (!validateUniqueNames(players, player.name)) {
+      return err<null, string>(`Player: ${player.name} already exists`);
+    }
+
+    const newId =
+      players.reduce((max, p) => {
+        const value = p.id ?? -1;
+        return value > max ? value : max;
+      }, -1) + 1;
+
+    const updatedPlayers = [...players, { ...player, id: newId }];
+    setPlayers(updatedPlayers);
+    onChange(
+      updatedPlayers.map((p) => ({
+        name: p.name,
+        positions: p.positions,
+      }))
+    );
+    setNewPlayer(null);
+    return ok(null);
   };
 
-  const showEditPlayer = (player: PlayerView) => {
-    setEditPlayer(player);
-  };
-
-  const newPlayer = () => {
-    const player = {
+  const onNewPlayer = () => {
+    setNewPlayer({
       name: '',
       positions: [],
-    };
-
-    showEditPlayer(player);
+    });
   };
 
   return (
     <>
-      {(editPlayer && (
+      <ul className='mb-3 w-96 rounded-lg border border-gray-200 bg-white text-gray-900'>
+        {players.map((player) => (
+          <PlayerRow
+            player={player}
+            onUpdatePlayer={onUpdatePlayer}
+            key={player.id ?? -1}
+          />
+        ))}
+      </ul>
+      {(newPlayer && (
         <EditPlayer
-          player={editPlayer}
-          onSubmit={onEditPlayer}
-          onCancel={onCancel}
+          player={newPlayer}
+          onSubmit={onCreatePlayer}
+          onCancel={() => setNewPlayer(null)}
         />
-      )) || (
-        <>
-          <ul className='mb-3 w-96 rounded-lg border border-gray-200 bg-white text-gray-900'>
-            {players.map((player) => (
-              <li
-                className='w-full border-b border-gray-200 px-6 py-2'
-                key={player.id ?? -1}
-              >
-                <div className='flex justify-between align-middle'>
-                  <div className='self-center'>{player.name}</div>
-                  <Button onClick={() => showEditPlayer(player)}>Edit</Button>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <Button onClick={newPlayer}>+ Player</Button>
-        </>
-      )}
+      )) || <Button onClick={onNewPlayer}>+ Player</Button>}
     </>
   );
 };

@@ -8,12 +8,7 @@ import Button from '@/components/buttons/Button';
 import ErrorText from '@/components/ErrorText';
 import PositionsSelector from '@/components/forms/PositionsSelector';
 import TextInput from '@/components/forms/TextInput';
-
-interface PlayerView {
-  id?: number;
-  name: string;
-  positions: Position[];
-}
+import PlayerView from '@/components/viewModels/playerView';
 
 interface PlayerInput {
   name: string;

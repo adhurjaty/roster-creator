@@ -1,17 +1,25 @@
+import { Result } from 'neverthrow';
 import { useState } from 'react';
-
-import Player from '@/lib/models/player';
 
 import Button from '@/components/buttons/Button';
 import EditPlayer from '@/components/forms/EditPlayer';
+import PlayerView from '@/components/viewModels/playerView';
 
 interface Props {
-  player: Player;
+  player: PlayerView;
+  onUpdatePlayer: (player: PlayerView) => Result<null, string>;
   isEditMode?: boolean;
 }
 
-const PlayerRow = ({ player, isEditMode }: Props) => {
+const PlayerRow = ({ player, onUpdatePlayer, isEditMode }: Props) => {
   const [editMode, setEditMode] = useState(isEditMode ?? false);
+
+  const localOnUpdatePlayer = (player: PlayerView) => {
+    return onUpdatePlayer(player).map((_) => {
+      setEditMode(false);
+      return _;
+    });
+  };
 
   const displayRow = (
     <div className='flex justify-between align-middle'>
@@ -25,15 +33,11 @@ const PlayerRow = ({ player, isEditMode }: Props) => {
       {(editMode && (
         <EditPlayer
           player={player}
-          onSubmit={onUpdatePlayer}
+          onSubmit={localOnUpdatePlayer}
           onCancel={() => setEditMode(false)}
         />
       )) ||
         displayRow}
-      <div className='flex justify-between align-middle'>
-        <div className='self-center'>{player.name}</div>
-        <Button onClick={() => showEditPlayer(player)}>Edit</Button>
-      </div>
     </li>
   );
 };
