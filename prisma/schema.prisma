@@ -47,6 +47,7 @@ model Game {
   team   Team?    @relation(fields: [teamId], references: [id])
   teamId String   @map("team_id")
   name   String
+  date   DateTime
   Roster Roster[]
 
   @@index([teamId])

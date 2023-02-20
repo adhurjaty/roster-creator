@@ -53,6 +53,7 @@ export async function getTeam(userId: string, teamId: string): Promise<Team> {
       {
         id: 'asdf',
         name: 'vs. Aardvarks',
+        date: new Date(2023, 3, 22),
         roster: {
           players: [],
           lineups: []
@@ -61,6 +62,7 @@ export async function getTeam(userId: string, teamId: string): Promise<Team> {
       {
         id: 'asdfe',
         name: 'vs. Bears',
+        date: new Date(2023, 2, 22),
         roster: {
           players: [],
           lineups: []

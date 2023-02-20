@@ -1,6 +1,7 @@
-import PlayerPosition from "@/lib/models/playerPosition";
+import Player from "@/lib/models/player";
+import Position from "@/lib/models/position";
 
 export default interface Lineup {
   period: number,
-  playerPositions: PlayerPosition[],
+  playerPositions: { player: Player, position: Position }[],
 }

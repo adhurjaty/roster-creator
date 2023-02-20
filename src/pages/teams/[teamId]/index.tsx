@@ -10,6 +10,7 @@ import Team from '@/lib/models/team';
 import Button from '@/components/buttons/Button';
 import PositionsLayout from '@/components/contexts/PositionsLayout';
 import TeamForm from '@/components/forms/TeamForm';
+import GamesView from '@/components/GamesView';
 import ListView from '@/components/list/ListView';
 
 const TeamPage = () => {
@@ -73,11 +74,10 @@ const TeamPage = () => {
         playersDisplay}
 
       <h3>Games</h3>
-      <ListView
-        list={(team?.games || []).map((game) => ({
-          key: game.id,
-          name: game.name,
-          location: `/teams/${teamId as string}/games/${game.id}`,
+      <GamesView
+        games={(team?.games ?? []).map((game) => ({
+          ...game,
+          teamId: teamId as string,
         }))}
       />
     </PositionsLayout>

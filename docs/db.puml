@@ -42,6 +42,7 @@ entity Game {
   ---
   *teamId: uuid
   *name: string
+  *date: datetime
 }
 
 entity Roster {

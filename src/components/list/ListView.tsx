@@ -6,15 +6,18 @@ interface ListItem {
   name: string;
 }
 
-interface Props {
-  list: ListItem[];
+interface Props<T extends ListItem> {
+  list: T[];
+  children?: (item: T) => React.ReactNode;
 }
 
-const ListView = ({ list }: Props) => (
+const ListView = <T extends ListItem>({ list, children }: Props<T>) => (
   <div className='flex justify-center'>
     <ul className='w-96 rounded-lg border border-gray-200 bg-white text-gray-900'>
       {list.map((el) => (
-        <ListItemView item={el} key={el.key ?? el.name} />
+        <ListItemView item={el} key={el.key ?? el.name}>
+          {children?.(el)}
+        </ListItemView>
       ))}
     </ul>
   </div>
