@@ -1,3 +1,4 @@
+import { err, ok } from 'neverthrow';
 import { useState } from 'react';
 
 import Player from '@/lib/models/player';
@@ -16,21 +17,35 @@ interface Props {
   onChange: (players: Player[]) => void;
 }
 
+function addOrEditPlayer(
+  player: PlayerView,
+  players: PlayerView[]
+): PlayerView[] {
+  const playerViews = players.map((p) => (p.id === player.id ? player : p));
+
+  if (player.id === undefined) {
+    playerViews.push({
+      ...player,
+      id:
+        players.reduce((max, p) => {
+          const value = p.id ?? -1;
+          return value > max ? value : max;
+        }, -1) + 1,
+    });
+  }
+
+  return playerViews;
+}
+
 const PlayersInput = ({ onChange }: Props) => {
   const [players, setPlayers] = useState<PlayerView[]>([]);
   const [editPlayer, setEditPlayer] = useState<PlayerView | null>(null);
 
   const onEditPlayer = (player: PlayerView) => {
-    const playerViews = players.map((p) => (p.id === player.id ? player : p));
-    if (player.id === undefined) {
-      playerViews.push({
-        ...player,
-        id:
-          players.reduce((max, p) => {
-            const value = p.id ?? -1;
-            return value > max ? value : max;
-          }, -1) + 1,
-      });
+    const playerViews = addOrEditPlayer(player, players);
+
+    if (playerViews.filter((p) => p.name === player.name).length > 1) {
+      return err<null, string>(`Player: ${player.name} already exists`);
     }
 
     setPlayers([...playerViews]);
@@ -41,6 +56,8 @@ const PlayersInput = ({ onChange }: Props) => {
       }))
     );
     setEditPlayer(null);
+
+    return ok(null);
   };
 
   const onCancel = () => {
