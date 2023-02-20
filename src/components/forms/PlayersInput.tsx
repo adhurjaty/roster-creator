@@ -9,6 +9,7 @@ import PlayerRow from '@/components/forms/PlayerRow';
 import PlayerView from '@/components/viewModels/playerView';
 
 interface Props {
+  value: Player[];
   onChange: (players: Player[]) => void;
 }
 
@@ -21,8 +22,13 @@ const validateUniqueNames = (ps: PlayerView[], name: string) => {
   return ok<null, Error>(null);
 };
 
-const PlayersInput = ({ onChange }: Props) => {
-  const [players, setPlayers] = useState<PlayerView[]>([]);
+const PlayersInput = ({ value, onChange }: Props) => {
+  const [players, setPlayers] = useState<PlayerView[]>(
+    value.map((player, i) => ({
+      ...player,
+      id: i,
+    }))
+  );
   const [newPlayer, setNewPlayer] = useState<PlayerView | null>(null);
 
   const onUpdatePlayer = (player: PlayerView) => {

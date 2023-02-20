@@ -56,5 +56,12 @@ export async function getTeam(userId: string, teamId: string): Promise<Team> {
 export async function createTeam(userId: string, team: Team): Promise<Response> {
   console.log(userId);
   console.log(team);
-  await Promise.resolve({});
+  return await Promise.resolve(new Response());
+}
+
+export async function updateTeam(userId: string, team: Team): Promise<Response> {
+  console.log(userId);
+  console.log(team.id);
+  console.log(team);
+  return await Promise.resolve(new Response());
 }

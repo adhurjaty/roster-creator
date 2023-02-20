@@ -3,14 +3,7 @@ import * as React from 'react';
 import ErrorText from '@/components/ErrorText';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PageTitle from '@/components/PageTitle';
-
-interface Props {
-  children: React.ReactNode;
-  title: string;
-  isLoading?: boolean;
-  isError?: boolean;
-  error?: Error | null;
-}
+import LayoutProps from '@/components/props/LayoutProps';
 
 export default function Layout({
   children,
@@ -18,7 +11,7 @@ export default function Layout({
   isLoading,
   isError,
   error,
-}: Props) {
+}: LayoutProps) {
   const loadedContent = (
     <>
       <PageTitle title={title} />
