@@ -1,5 +1,6 @@
 import { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import '@/lib/extensions/arrayExtensions';
 
 import '@/styles/globals.css';
 // !STARTERCONF This is for demo purposes, remove @/styles/colors.css import immediately

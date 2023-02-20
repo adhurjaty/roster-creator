@@ -12,66 +12,60 @@ interface Props {
   onChange: (players: Player[]) => void;
 }
 
+const validateUniqueNames = (ps: PlayerView[], name: string) => {
+  const player = ps.find((p) => p.name === name);
+  if (player) {
+    return err<null, Error>(new Error(`Player: ${name} already exists`));
+  }
+
+  return ok<null, Error>(null);
+};
+
 const PlayersInput = ({ onChange }: Props) => {
   const [players, setPlayers] = useState<PlayerView[]>([]);
   const [newPlayer, setNewPlayer] = useState<PlayerView | null>(null);
 
-  const validateUniqueNames = (ps: PlayerView[], name: string) => {
-    return !ps.find((p) => p.name === name);
-  };
-
   const onUpdatePlayer = (player: PlayerView) => {
-    const idx = players.findIndex((p) => player.id === p.id);
-
-    if (idx < 0) {
-      return err<null, string>('Could not find player');
-    }
-
-    if (
-      !validateUniqueNames(
-        [...players.slice(0, idx), ...players.slice(idx + 1)],
-        player.name
+    return players
+      .findIndexResult((p) => player.id === p.id)
+      .andThen((idx) =>
+        validateUniqueNames(players.removeAt(idx), player.name).map((_) => idx)
       )
-    ) {
-      return err<null, string>(`Player: ${player.name} already exists`);
-    }
-
-    const updatedPlayers = [
-      ...players.slice(0, idx),
-      player,
-      ...players.slice(idx + 1),
-    ];
-    setPlayers(updatedPlayers);
-    onChange(
-      updatedPlayers.map((p) => ({
-        name: p.name,
-        positions: p.positions,
-      }))
-    );
-    return ok(null);
+      .map((idx) => [
+        ...players.slice(0, idx),
+        player,
+        ...players.slice(idx + 1),
+      ])
+      .map((updatedPlayers) => {
+        setPlayers(updatedPlayers);
+        onChange(
+          updatedPlayers.map((p) => ({
+            name: p.name,
+            positions: p.positions,
+          }))
+        );
+        return null;
+      });
   };
 
   const onCreatePlayer = (player: PlayerView) => {
-    if (!validateUniqueNames(players, player.name)) {
-      return err<null, string>(`Player: ${player.name} already exists`);
-    }
-
-    const newId =
-      players.reduce((max, p) => {
-        const value = p.id ?? -1;
-        return value > max ? value : max;
-      }, -1) + 1;
-
-    const updatedPlayers = [...players, { ...player, id: newId }];
-    setPlayers(updatedPlayers);
-    onChange(
-      updatedPlayers.map((p) => ({
-        name: p.name,
-        positions: p.positions,
+    return validateUniqueNames(players, player.name)
+      .map((_) => ({
+        ...player,
+        id: players.max((p) => p.id, -1) + 1,
       }))
-    );
-    setNewPlayer(null);
-    return ok(null);
+      .map((newPlayer) => [...players, newPlayer])
+      .map((updatedPlayers) => {
+        setPlayers(updatedPlayers);
+        onChange(
+          updatedPlayers.map((p) => ({
+            name: p.name,
+            positions: p.positions,
+          }))
+        );
+        setNewPlayer(null);
+        return null;
+      });
   };
 
   const onNewPlayer = () => {
@@ -82,12 +76,9 @@ const PlayersInput = ({ onChange }: Props) => {
   };
 
   const onDeletePlayer = (player: PlayerView) => {
-    const idx = players.findIndex((p) => player.id === p.id);
-    if (idx < 0) {
-      throw new Error('Could not find player');
-    }
-
-    setPlayers([...players.slice(0, idx), ...players.slice(idx + 1)]);
+    players
+      .findIndexResult((p) => p.id === player.id)
+      .map((idx) => setPlayers(players.removeAt(idx)));
   };
 
   return (

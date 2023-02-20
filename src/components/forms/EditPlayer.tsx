@@ -16,7 +16,7 @@ interface PlayerInput {
 
 interface Props {
   player: PlayerView;
-  onSubmit: (player: PlayerView) => Result<null, string>;
+  onSubmit: (player: PlayerView) => Result<null, Error>;
   onCancel: () => void;
 }
 
@@ -61,7 +61,7 @@ const EditPlayer = ({ player, onSubmit, onCancel }: Props) => {
       positions: selectedPositions,
     })
       .map((_) => setSubmitError(undefined))
-      .mapErr((err) => setSubmitError(err));
+      .mapErr((err) => setSubmitError(err.message));
   };
 
   return (

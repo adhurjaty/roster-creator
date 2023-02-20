@@ -7,7 +7,7 @@ import PlayerView from '@/components/viewModels/playerView';
 
 interface Props {
   player: PlayerView;
-  onUpdate: (player: PlayerView) => Result<null, string>;
+  onUpdate: (player: PlayerView) => Result<null, Error>;
   onDelete: (player: PlayerView) => void;
 }
 
