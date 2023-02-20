@@ -81,13 +81,23 @@ const PlayersInput = ({ onChange }: Props) => {
     });
   };
 
+  const onDeletePlayer = (player: PlayerView) => {
+    const idx = players.findIndex((p) => player.id === p.id);
+    if (idx < 0) {
+      throw new Error('Could not find player');
+    }
+
+    setPlayers([...players.slice(0, idx), ...players.slice(idx + 1)]);
+  };
+
   return (
     <>
       <ul className='mb-3 w-96 rounded-lg border border-gray-200 bg-white text-gray-900'>
         {players.map((player) => (
           <PlayerRow
             player={player}
-            onUpdatePlayer={onUpdatePlayer}
+            onUpdate={onUpdatePlayer}
+            onDelete={onDeletePlayer}
             key={player.id ?? -1}
           />
         ))}
