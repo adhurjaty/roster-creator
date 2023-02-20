@@ -9,10 +9,10 @@ import LayoutProps from '@/components/props/LayoutProps';
 
 const PositionsLayout = ({
   children,
-  title,
   isLoading,
   isError,
   error,
+  ...rest
 }: LayoutProps) => {
   const {
     isLoading: isLoadingPositions,
@@ -23,10 +23,10 @@ const PositionsLayout = ({
 
   return (
     <Layout
-      title={title}
       isLoading={isLoading || isLoadingPositions}
       isError={isError || isPositionsError}
       error={error ?? positionsError}
+      {...rest}
     >
       <PositionsContext.Provider value={positions ?? []}>
         {children}

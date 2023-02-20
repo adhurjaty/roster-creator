@@ -1,14 +1,20 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 
 import { getTeam, updateTeam } from '@/lib/apiInterface/teamsRepo';
 import Team from '@/lib/models/team';
 
+import Button from '@/components/buttons/Button';
 import PositionsLayout from '@/components/contexts/PositionsLayout';
 import TeamForm from '@/components/forms/TeamForm';
+import ListView from '@/components/list/ListView';
 
 const TeamPage = () => {
+  const [editMode, setEditMode] = useState(false);
+
   const router = useRouter();
   const { teamId } = router.query;
 
@@ -28,24 +34,51 @@ const TeamPage = () => {
 
   const onSubmit = (team: Team) => {
     mutate(team);
+    setEditMode(false);
   };
 
-  const onCancel = () => {};
+  const playersDisplay = (
+    <>
+      <h3>Players</h3>
+      <ListView
+        list={(team?.players ?? []).map((player) => ({
+          key: player.id,
+          name: player.name,
+        }))}
+      />
+      <Button className='my-2' onClick={() => setEditMode(true)}>
+        Edit team
+      </Button>
+    </>
+  );
 
   return (
     <PositionsLayout
-      title={`Edit Team ${team?.name}`}
+      title={`Team ${team?.name}`}
+      className='flex flex-col items-center'
       isLoading={isLoading || !team}
       isError={isError}
       error={error}
     >
-      <TeamForm
-        team={team!}
-        onSubmit={onSubmit}
-        onCancel={onCancel}
-        isSubmitError={isUpdateError}
-        submitError={updateError}
-        isSubmitLoading={isUpdateLoading}
+      {(editMode && (
+        <TeamForm
+          team={team!}
+          onSubmit={onSubmit}
+          onCancel={() => setEditMode(false)}
+          isSubmitError={isUpdateError}
+          submitError={updateError}
+          isSubmitLoading={isUpdateLoading}
+        />
+      )) ||
+        playersDisplay}
+
+      <h3>Games</h3>
+      <ListView
+        list={(team?.games || []).map((game) => ({
+          key: game.id,
+          name: game.name,
+          location: `/teams/${teamId as string}/games/${game.id}`,
+        }))}
       />
     </PositionsLayout>
   );

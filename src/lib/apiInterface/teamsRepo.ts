@@ -49,7 +49,24 @@ export async function getTeam(userId: string, teamId: string): Promise<Team> {
         positions: []
       }
     ],
-    games: []
+    games: [
+      {
+        id: 'asdf',
+        name: 'vs. Aardvarks',
+        roster: {
+          players: [],
+          lineups: []
+        }
+      },
+      {
+        id: 'asdfe',
+        name: 'vs. Bears',
+        roster: {
+          players: [],
+          lineups: []
+        }
+      },
+    ]
   });
 }
 
