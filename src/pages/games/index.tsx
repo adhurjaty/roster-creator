@@ -5,6 +5,7 @@ import Team from '@/lib/models/team';
 
 import GamesView from '@/components/GamesView';
 import Layout from '@/components/layout/Layout';
+import ButtonLink from '@/components/links/ButtonLink';
 
 const GamesPage = () => {
   const {
@@ -24,7 +25,10 @@ const GamesPage = () => {
 
   return (
     <Layout title='Games' isLoading={isLoading} isError={isError} error={error}>
-      <GamesView games={games} />
+      <div className='flex flex-col items-center justify-center'>
+        <GamesView games={games} />
+        <ButtonLink href='/games/create'>+ Game</ButtonLink>
+      </div>
     </Layout>
   );
 };

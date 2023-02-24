@@ -6,6 +6,7 @@ import Team from '@/lib/models/team';
 
 import GamesView from '@/components/GamesView';
 import Layout from '@/components/layout/Layout';
+import ButtonLink from '@/components/links/ButtonLink';
 
 const TeamGamesPage = () => {
   const router = useRouter();
@@ -22,12 +23,17 @@ const TeamGamesPage = () => {
 
   return (
     <Layout title='Games' isLoading={isLoading} isError={isError} error={error}>
-      <GamesView
-        games={games.map((game) => ({
-          ...game,
-          teamId: teamId as string,
-        }))}
-      />
+      <div className='flex flex-col items-center justify-center'>
+        <GamesView
+          games={games.map((game) => ({
+            ...game,
+            teamId: teamId as string,
+          }))}
+        />
+        <ButtonLink href={`/teams/${teamId as string}/games/create`}>
+          + Game
+        </ButtonLink>
+      </div>
     </Layout>
   );
 };
