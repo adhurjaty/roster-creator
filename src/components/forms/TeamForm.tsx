@@ -42,8 +42,6 @@ const TeamForm = ({
   });
 
   const localOnSubmit: SubmitHandler<TeamFormInput> = (data) => {
-    // validate();
-
     onSubmit({
       ...team,
       ...data,

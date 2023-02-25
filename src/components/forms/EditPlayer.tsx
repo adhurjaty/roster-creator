@@ -1,12 +1,7 @@
-import { Result } from 'neverthrow';
 import { useContext } from 'react';
-import {
-  Controller,
-  FieldError,
-  SubmitHandler,
-  useForm,
-} from 'react-hook-form';
+import { Controller, FieldError, useForm } from 'react-hook-form';
 
+import Player from '@/lib/models/player';
 import Position from '@/lib/models/position';
 
 import Button from '@/components/buttons/Button';
@@ -14,7 +9,6 @@ import PositionsContext from '@/components/contexts/PositionsContext';
 import ErrorText from '@/components/ErrorText';
 import MultiSelect from '@/components/forms/MultiSelect';
 import TextInput from '@/components/forms/TextInput';
-import PlayerView from '@/components/viewModels/playerView';
 
 interface PlayerInput {
   name: string;
@@ -22,13 +16,13 @@ interface PlayerInput {
 }
 
 interface Props {
-  player: PlayerView;
-  onSubmit: (player: PlayerView) => Result<null, Error>;
+  value: Player;
+  onChange: (player: Player) => void;
   onCancel: () => void;
   error?: FieldError;
 }
 
-const EditPlayer = ({ player, onSubmit, onCancel, error }: Props) => {
+const EditPlayer = ({ value: player, onChange, onCancel, error }: Props) => {
   const allPositions = useContext(PositionsContext);
 
   const {
@@ -41,13 +35,6 @@ const EditPlayer = ({ player, onSubmit, onCancel, error }: Props) => {
       positions: player.positions ?? [],
     },
   });
-
-  const onClickSave: SubmitHandler<PlayerInput> = (data) => {
-    onSubmit({
-      id: player.id,
-      ...data,
-    });
-  };
 
   return (
     <>
@@ -80,7 +67,7 @@ const EditPlayer = ({ player, onSubmit, onCancel, error }: Props) => {
       />
       {errors.positions && <ErrorText text={errors.positions.message ?? ''} />}
       <div className='flex'>
-        <Button onClick={handleSubmit(onClickSave)}>Save</Button>
+        <Button onClick={handleSubmit(onChange)}>Save</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </div>
       {error && <ErrorText className='mt-2' text={error.message ?? ''} />}

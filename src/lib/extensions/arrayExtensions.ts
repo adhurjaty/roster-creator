@@ -8,6 +8,7 @@ declare global {
     removeAt(idx: number): Array<T>
     max<U>(pred: (el: T) => U | undefined | null, defaultValue: U): U
     splitDate(date: Date): { past: T[], present: T[], future: T[] }
+    zip<U>(other: Array<U>): Array<[T, U]>
   }
 }
 
@@ -58,4 +59,18 @@ Array.prototype.splitDate = function <T extends { date: Date }>(date: Date) {
     present,
     future
   };
+}
+
+Array.prototype.zip = function <T, U>(other: Array<U>) {
+  const arr = this as Array<T>;
+
+  const limit = Math.min(arr.length, other.length);
+
+  const outArr: [T, U][] = [];
+
+  for (let i = 0; i < limit; i++) {
+    outArr.push([arr[i], other[i]]);
+  }
+
+  return outArr;
 }

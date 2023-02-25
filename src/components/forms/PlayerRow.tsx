@@ -1,24 +1,44 @@
-import { Result } from 'neverthrow';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { FieldError } from 'react-hook-form';
+
+import Player from '@/lib/models/player';
 
 import Button from '@/components/buttons/Button';
 import EditPlayer from '@/components/forms/EditPlayer';
-import PlayerView from '@/components/viewModels/playerView';
 
 interface Props {
-  player: PlayerView;
-  onUpdate: (player: PlayerView) => Result<null, Error>;
-  onDelete: (player: PlayerView) => void;
+  value: Player;
+  onChange: (player: Player) => void;
+  onDelete: (player: Player) => void;
+  defaultEditMode?: boolean;
+  error?: FieldError;
 }
 
-const PlayerRow = ({ player, onUpdate, onDelete }: Props) => {
-  const [editMode, setEditMode] = useState(false);
+const PlayerRow = ({
+  value: player,
+  defaultEditMode,
+  onChange,
+  onDelete,
+  error,
+}: Props) => {
+  const [editMode, setEditMode] = useState(defaultEditMode ?? false);
 
-  const localOnUpdate = (player: PlayerView) => {
-    return onUpdate(player).map((_) => {
-      setEditMode(false);
-      return _;
-    });
+  useEffect(() => {
+    if (error) {
+      setEditMode(true);
+    }
+  }, [error]);
+
+  const localOnUpdate = (player: Player) => {
+    onChange(player);
+    setEditMode(false);
+  };
+
+  const onCancel = () => {
+    setEditMode(false);
+    if (!player.name) {
+      onDelete(player);
+    }
   };
 
   const displayRow = (
@@ -37,9 +57,10 @@ const PlayerRow = ({ player, onUpdate, onDelete }: Props) => {
     <li className='w-full border-b border-gray-200 px-6 py-2'>
       {(editMode && (
         <EditPlayer
-          player={player}
-          onSubmit={localOnUpdate}
-          onCancel={() => setEditMode(false)}
+          value={player}
+          onChange={localOnUpdate}
+          onCancel={onCancel}
+          error={error}
         />
       )) ||
         displayRow}
