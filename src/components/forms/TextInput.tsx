@@ -1,38 +1,29 @@
-import {
-  FieldValues,
-  Path,
-  RegisterOptions,
-  UseFormRegister,
-} from 'react-hook-form';
+import { ForwardedRef, forwardRef } from 'react';
+import { FieldError } from 'react-hook-form';
 
-interface Props<T extends FieldValues> {
-  name: Path<T>;
+import ErrorText from '@/components/ErrorText';
+
+interface Props extends React.ComponentPropsWithoutRef<'input'> {
   label: string;
-  register: UseFormRegister<T>;
-  options: RegisterOptions<T, Path<T>> | undefined;
+  error?: FieldError;
 }
 
-const TextInput = <T extends FieldValues>({
-  name,
-  label,
-  register,
-  options,
-}: Props<T>) => (
-  <div className='mb-4'>
-    <label
-      className='mb-2 block text-sm font-bold text-gray-700'
-      htmlFor={name}
-    >
-      {label}
-    </label>
-    <input
-      id={name}
-      className='focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none'
-      {...register(name, options)}
-      type='text'
-      placeholder={label}
-    />
-  </div>
+const TextInput = forwardRef(
+  ({ label, error, ...rest }: Props, ref: ForwardedRef<HTMLInputElement>) => (
+    <div className='mb-4'>
+      <label className='mb-2 block text-sm font-bold text-gray-700'>
+        {label}
+      </label>
+      <input
+        className='focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none'
+        type='text'
+        placeholder={label}
+        ref={ref}
+        {...rest}
+      />
+      {error && <ErrorText text={error.message || ''} />}
+    </div>
+  )
 );
 
 export default TextInput;

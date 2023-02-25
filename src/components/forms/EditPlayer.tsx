@@ -1,92 +1,89 @@
 import { Result } from 'neverthrow';
-import { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useContext } from 'react';
+import {
+  Controller,
+  FieldError,
+  SubmitHandler,
+  useForm,
+} from 'react-hook-form';
 
 import Position from '@/lib/models/position';
 
 import Button from '@/components/buttons/Button';
+import PositionsContext from '@/components/contexts/PositionsContext';
 import ErrorText from '@/components/ErrorText';
-import PositionsSelector from '@/components/forms/PositionsSelector';
+import MultiSelect from '@/components/forms/MultiSelect';
 import TextInput from '@/components/forms/TextInput';
 import PlayerView from '@/components/viewModels/playerView';
 
 interface PlayerInput {
   name: string;
+  positions: Position[];
 }
 
 interface Props {
   player: PlayerView;
   onSubmit: (player: PlayerView) => Result<null, Error>;
   onCancel: () => void;
+  error?: FieldError;
 }
 
-const EditPlayer = ({ player, onSubmit, onCancel }: Props) => {
-  const [selectedPositions, setSelectedPositions] = useState<Position[]>(
-    player.positions ?? []
-  );
-  const [submitError, setSubmitError] = useState<string>();
+const EditPlayer = ({ player, onSubmit, onCancel, error }: Props) => {
+  const allPositions = useContext(PositionsContext);
+
   const {
-    register,
-    watch,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<PlayerInput>({
     defaultValues: {
       name: player.name,
+      positions: player.positions ?? [],
     },
   });
-  const watchName = watch('name');
-
-  useEffect(() => {
-    setSubmitError(undefined);
-  }, [selectedPositions, watchName]);
-
-  const validate = () => {
-    if (selectedPositions.length == 0) {
-      setSubmitError('Must select at least one position');
-      return false;
-    }
-
-    return true;
-  };
 
   const onClickSave: SubmitHandler<PlayerInput> = (data) => {
-    if (!validate()) {
-      return;
-    }
-
     onSubmit({
       id: player.id,
-      name: data.name,
-      positions: selectedPositions,
-    })
-      .map((_) => setSubmitError(undefined))
-      .mapErr((err) => setSubmitError(err.message));
+      ...data,
+    });
   };
 
   return (
     <>
       <h3>Edit Player</h3>
-      <TextInput
-        register={register}
+      <Controller
+        control={control}
         name='name'
-        label='Name'
-        options={{ required: true, maxLength: 40 }}
+        rules={{
+          required: { value: true, message: 'Must enter player name' },
+          maxLength: { value: 40, message: 'Name is too long' },
+        }}
+        render={({ field }) => (
+          <TextInput label='Name' error={errors.name} {...field} />
+        )}
       />
-      <PositionsSelector
-        selectedPositions={selectedPositions}
-        setSelectedPositions={setSelectedPositions}
+      <Controller
+        control={control}
+        name='positions'
+        rules={{
+          validate: (positions) =>
+            positions.length > 0 || 'Must select at least one position',
+        }}
+        render={({ field }) => (
+          <MultiSelect
+            choices={allPositions}
+            value={field.value}
+            onChange={field.onChange}
+          />
+        )}
       />
+      {errors.positions && <ErrorText text={errors.positions.message ?? ''} />}
       <div className='flex'>
         <Button onClick={handleSubmit(onClickSave)}>Save</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </div>
-      {(submitError || errors.name?.message) && (
-        <ErrorText
-          className='mt-2'
-          text={submitError ?? errors.name?.message ?? ''}
-        />
-      )}
+      {error && <ErrorText className='mt-2' text={error.message ?? ''} />}
     </>
   );
 };

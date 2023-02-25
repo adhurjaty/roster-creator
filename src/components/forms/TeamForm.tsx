@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import Player from '@/lib/models/player';
 import Team from '@/lib/models/team';
@@ -11,6 +10,7 @@ import TextInput from '@/components/forms/TextInput';
 
 interface TeamFormInput {
   name: string;
+  players: Player[];
 }
 
 interface Props {
@@ -30,52 +30,53 @@ const TeamForm = ({
   isSubmitError,
   submitError,
 }: Props) => {
-  const [players, setPlayers] = useState<Player[]>(team.players);
-  const [validationError, setValidationError] = useState<Error>();
-  const { register, watch, handleSubmit } = useForm<TeamFormInput>({
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<TeamFormInput>({
     defaultValues: {
       name: team.name,
+      players: team.players,
     },
   });
-  const watchName = watch('name');
-
-  useEffect(() => {
-    setValidationError(undefined);
-  }, [watchName, players]);
-
-  const validate = () => {
-    if (players.length === 0) {
-      setValidationError(
-        new Error('Must have at least one player on the team')
-      );
-    }
-  };
 
   const localOnSubmit: SubmitHandler<TeamFormInput> = (data) => {
-    validate();
+    // validate();
 
     onSubmit({
       ...team,
       ...data,
-      players,
     });
   };
-
-  const isError = !!validationError || isSubmitError;
-  const formError = validationError ?? submitError;
 
   return (
     <form
       className='mx-3 flex flex-col items-center justify-center'
       onSubmit={handleSubmit(localOnSubmit)}
     >
-      <TextInput
-        register={register}
+      <Controller
+        control={control}
         name='name'
-        label='Name'
-        options={{ required: true, maxLength: 40 }}
+        rules={{
+          required: { value: true, message: 'Must enter team name' },
+          maxLength: { value: 40, message: 'Name is too long' },
+        }}
+        render={({ field }) => (
+          <TextInput label='Name' error={errors.name} {...field} />
+        )}
       />
-      <PlayersInput value={team.players} onChange={setPlayers} />
+      <Controller
+        control={control}
+        name='players'
+        rules={{
+          validate: (players) => players.length > 0 || 'Must add players',
+        }}
+        render={({ field }) => (
+          <PlayersInput value={field.value} onChange={field.onChange} />
+        )}
+      />
+      {errors.players && <ErrorText text={errors.players.message ?? ''} />}
       <div className='my-2 flex flex-row justify-end'>
         <Button isLoading={isSubmitLoading} submit>
           Submit
@@ -84,7 +85,7 @@ const TeamForm = ({
           Cancel
         </Button>
       </div>
-      {isError && <ErrorText text={formError?.message ?? ''} />}
+      {isSubmitError && <ErrorText text={submitError?.message ?? ''} />}
     </form>
   );
 };

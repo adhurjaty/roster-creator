@@ -2,20 +2,19 @@ import React from 'react';
 
 interface Props<T extends { name: string }> {
   choices: T[];
-  selectedChoices: T[];
-  setSelectedChoices: (choices: T[]) => void;
+  value: T[];
+  onChange: (choices: T[]) => void;
 }
 
 const MultiSelect = <T extends { name: string }>({
   choices,
-  selectedChoices,
-  setSelectedChoices,
+  value,
+  onChange,
 }: Props<T>) => {
   const onChangeFn =
     (choice: T) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.checked)
-        setSelectedChoices(selectedChoices.concat([choice]));
-      else setSelectedChoices(selectedChoices.filter((x) => x !== choice));
+      if (e.target.checked) onChange(value.concat([choice]));
+      else onChange(value.filter((x) => x.name !== choice.name));
     };
 
   return (
@@ -28,7 +27,7 @@ const MultiSelect = <T extends { name: string }>({
           <input
             id='bordered-checkbox-1'
             type='checkbox'
-            checked={selectedChoices.includes(choice)}
+            checked={!!value.find((v) => v.name === choice.name)}
             value=''
             name='bordered-checkbox'
             onChange={onChangeFn(choice)}
