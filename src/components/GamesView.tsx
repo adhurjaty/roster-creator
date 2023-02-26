@@ -25,7 +25,7 @@ const GamesView = ({ games }: Props) => {
         {(game) => (
           <div className='flex justify-between'>
             <div>{game.name}</div>
-            <div>{game.date.toLocaleString()}</div>
+            <div>{game.date.toLocaleString().replace(/:\d{2}\s/, ' ')}</div>
           </div>
         )}
       </ListView>

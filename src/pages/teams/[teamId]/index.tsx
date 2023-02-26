@@ -24,7 +24,7 @@ const TeamPage = () => {
     isError,
     data: team,
     error,
-  } = useQuery<Team, Error>('teams', () => getTeam('foo', teamId as string));
+  } = useQuery<Team, Error>('team', () => getTeam('foo', teamId as string));
 
   const {
     isLoading: isUpdateLoading,
@@ -53,6 +53,13 @@ const TeamPage = () => {
     </>
   );
 
+  const goToCreateGamePage = () => {
+    router.push({
+      pathname: '/games/create',
+      query: { teamId },
+    });
+  };
+
   return (
     <PositionsLayout
       title={`Team ${team?.name}`}
@@ -80,6 +87,9 @@ const TeamPage = () => {
           teamId: teamId as string,
         }))}
       />
+      <Button className='mt-2' onClick={goToCreateGamePage}>
+        + Game
+      </Button>
     </PositionsLayout>
   );
 };
