@@ -1,26 +1,31 @@
 import { useEffect, useState } from 'react';
 import { FieldError } from 'react-hook-form';
 
-import Player from '@/lib/models/player';
-
 import Button from '@/components/buttons/Button';
-import EditPlayer from '@/components/forms/EditPlayer';
 
-interface Props {
-  value: Player;
-  onChange: (player: Player) => void;
-  onDelete: (player: Player) => void;
+interface EditFormProps<T extends { name: string }> {
+  value: T;
+  onChange: (value: T) => void;
+  onCancel: () => void;
+}
+
+interface Props<T extends { name: string }> {
+  value: T;
+  onChange: (player: T) => void;
+  onDelete: (player: T) => void;
+  editForm: (props: EditFormProps<T>) => JSX.Element;
   defaultEditMode?: boolean;
   error?: FieldError;
 }
 
-const PlayerRow = ({
-  value: player,
+const EditDeleteRow = <T extends { name: string }>({
+  value,
   defaultEditMode,
   onChange,
   onDelete,
+  editForm,
   error,
-}: Props) => {
+}: Props<T>) => {
   const [editMode, setEditMode] = useState(defaultEditMode ?? false);
 
   useEffect(() => {
@@ -29,24 +34,24 @@ const PlayerRow = ({
     }
   }, [error]);
 
-  const localOnUpdate = (player: Player) => {
-    onChange(player);
+  const localOnUpdate = (newValue: T) => {
+    onChange(newValue);
     setEditMode(false);
   };
 
   const onCancel = () => {
     setEditMode(false);
-    if (!player.name) {
-      onDelete(player);
+    if (!value.name) {
+      onDelete(value);
     }
   };
 
   const displayRow = (
     <div className='flex justify-between align-middle'>
-      <div className='self-center'>{player.name}</div>
+      <div className='self-center'>{value.name}</div>
       <div className='flex justify-end'>
         <Button onClick={() => setEditMode(true)}>Edit</Button>
-        <Button variant='alert' onClick={() => onDelete(player)}>
+        <Button variant='alert' onClick={() => onDelete(value)}>
           Delete
         </Button>
       </div>
@@ -55,17 +60,10 @@ const PlayerRow = ({
 
   return (
     <li className='w-full border-b border-gray-200 px-6 py-2'>
-      {(editMode && (
-        <EditPlayer
-          value={player}
-          onChange={localOnUpdate}
-          onCancel={onCancel}
-          error={error}
-        />
-      )) ||
+      {(editMode && editForm({ value, onChange: localOnUpdate, onCancel })) ||
         displayRow}
     </li>
   );
 };
 
-export default PlayerRow;
+export default EditDeleteRow;

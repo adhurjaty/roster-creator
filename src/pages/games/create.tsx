@@ -1,46 +1,60 @@
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import Datepicker from 'react-datepicker';
 import { Controller, useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 
 import { createGame } from '@/lib/apiInterface/gamesRepo';
+import { getTeams } from '@/lib/apiInterface/teamsRepo';
 import Game from '@/lib/models/game';
+import Team from '@/lib/models/team';
 
 import Button from '@/components/buttons/Button';
 import ErrorText from '@/components/ErrorText';
+import SelectInput from '@/components/forms/SelectInput';
 import TextInput from '@/components/forms/TextInput';
 import Layout from '@/components/layout/Layout';
 
 interface GameFormInput {
+  teamId: string;
   opponent: string;
   date: Date;
 }
 
 const CreateGamePage = () => {
-  const [formError, setFormError] = useState<string>();
+  const {
+    isLoading,
+    isError,
+    data: teams,
+    error,
+  } = useQuery<Team[], Error>('teams', () => getTeams('foo'));
 
-  const { isLoading, mutate, isError, error } = useMutation<
-    Response,
-    Error,
-    Game
-  >((newGame) => createGame('teamId', newGame));
+  const {
+    isLoading: isSubmitting,
+    mutate,
+    isError: isSubmitError,
+    error: submitError,
+  } = useMutation<Response, Error, Game & { teamId: string }>((newGame) =>
+    createGame(newGame.teamId, newGame)
+  );
 
-  const { register, watch, handleSubmit, control } = useForm<GameFormInput>({
+  const router = useRouter();
+  const { teamId } = router.query;
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<GameFormInput>({
     defaultValues: {
+      teamId: (teamId as string | undefined) ?? '',
       opponent: '',
       date: new Date(),
     },
   });
 
-  const watchOpponent = watch('opponent');
-  const watchDate = watch('date');
-
-  useEffect(() => {
-    setFormError(undefined);
-  }, [watchOpponent, watchDate]);
-
   const onSubmit = (data: GameFormInput) => {
     mutate({
+      teamId: data.teamId,
       name: `vs. ${data.opponent}`,
       date: data.date,
       roster: {
@@ -61,11 +75,31 @@ const CreateGamePage = () => {
         className='mx-3 flex flex-col items-center justify-center'
         onSubmit={handleSubmit(onSubmit)}
       >
-        <TextInput
-          register={register}
+        <Controller
+          control={control}
+          name='teamId'
+          rules={{
+            required: { value: true, message: 'Must select a team' },
+          }}
+          render={({ field }) => (
+            <SelectInput
+              label='Team'
+              error={errors.teamId}
+              options={teams?.map((t) => ({ ...t, id: t.id as string })) ?? []}
+              {...field}
+            />
+          )}
+        />
+        <Controller
+          control={control}
           name='opponent'
-          label='Opponent'
-          options={{ required: true, maxLength: 40 }}
+          rules={{
+            required: { value: true, message: 'Must select an opponent' },
+            maxLength: { value: 40, message: 'Name is too long' },
+          }}
+          render={({ field }) => (
+            <TextInput label='Opponent' error={errors.opponent} {...field} />
+          )}
         />
         <div className='mb-4'>
           <label
@@ -90,10 +124,10 @@ const CreateGamePage = () => {
             )}
           />
         </div>
-        <Button isLoading={isLoading} submit>
+        <Button isLoading={isSubmitting} submit>
           Submit
         </Button>
-        {isError && <ErrorText text={formError ?? ''} />}
+        {isSubmitError && <ErrorText text={submitError?.message ?? ''} />}
       </form>
     </Layout>
   );

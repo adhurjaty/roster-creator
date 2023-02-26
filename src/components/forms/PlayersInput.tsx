@@ -9,7 +9,8 @@ import {
 import Player from '@/lib/models/player';
 
 import Button from '@/components/buttons/Button';
-import PlayerRow from '@/components/forms/PlayerRow';
+import EditDeleteRow from '@/components/forms/EditDeleteRow';
+import EditPlayer from '@/components/forms/EditPlayer';
 
 interface PlayersInput {
   players: Player[];
@@ -67,15 +68,28 @@ const PlayersInput = ({ value: players, onChange }: Props) => {
                 );
               },
             }}
-            render={({ field }) => (
-              <PlayerRow
-                value={field.value}
-                onChange={onUpdatePlayerFn(field)}
-                onDelete={() => remove(index)}
-                defaultEditMode={!!field.value}
-                error={errors.players?.at?.(index) as FieldError | undefined}
-              />
-            )}
+            render={({ field }) => {
+              const error = errors.players?.at?.(index) as
+                | FieldError
+                | undefined;
+              return (
+                <EditDeleteRow
+                  value={field.value}
+                  onChange={onUpdatePlayerFn(field)}
+                  onDelete={() => remove(index)}
+                  defaultEditMode={field.value.name === ''}
+                  error={error}
+                  editForm={({ value, onChange, onCancel }) => (
+                    <EditPlayer
+                      value={value}
+                      onChange={onChange}
+                      onCancel={onCancel}
+                      error={error}
+                    />
+                  )}
+                />
+              );
+            }}
           />
         ))}
       </ul>
