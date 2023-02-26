@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import Datepicker from 'react-datepicker';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQuery } from 'react-query';
@@ -40,17 +41,27 @@ const CreateGamePage = () => {
   const router = useRouter();
   const { teamId } = router.query;
 
+  const defaultValues = {
+    teamId: (teamId as string | undefined) ?? '',
+    opponent: '',
+    date: new Date(),
+  };
+
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<GameFormInput>({
-    defaultValues: {
-      teamId: (teamId as string | undefined) ?? '',
-      opponent: '',
-      date: new Date(),
-    },
-  });
+    reset,
+  } = useForm<GameFormInput>({ defaultValues });
+
+  useEffect(() => {
+    if (teamId) {
+      reset({
+        ...defaultValues,
+        teamId: teamId as string,
+      });
+    }
+  }, [teamId, reset]);
 
   const onSubmit = (data: GameFormInput) => {
     mutate({

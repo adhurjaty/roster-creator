@@ -23,7 +23,7 @@ const SelectInput = forwardRef(
         ref={ref}
         {...rest}
       >
-        <option>{`Choose a ${label}...`}</option>
+        <option value=''>{`Choose a ${label}...`}</option>
         {options.map((option) => (
           <option key={option.id} value={option.id}>
             {option.name}
