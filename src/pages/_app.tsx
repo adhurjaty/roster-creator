@@ -7,6 +7,8 @@ import '@/styles/globals.css';
 import '@/styles/colors.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
+import { StaticReposProvider } from '@/lib/repositories/ReposProvider';
+
 /**
  * !STARTERCONF info
  * ? `Layout` component is called in every page using `np` snippets. If you have consistent layout across all page, you can add it here too
@@ -17,7 +19,9 @@ const queryClient = new QueryClient();
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
+      <StaticReposProvider>
+        <Component {...pageProps} />
+      </StaticReposProvider>
     </QueryClientProvider>
   );
 }

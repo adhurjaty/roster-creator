@@ -1,18 +1,20 @@
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 
-import { createTeam } from '@/lib/apiInterface/teamsRepo';
 import Team from '@/lib/models/team';
+import { useTeamsRepo } from '@/lib/repositories/ReposProvider';
 
 import PositionsLayout from '@/components/contexts/PositionsLayout';
 import TeamForm from '@/components/forms/TeamForm';
 
 const CreateTeamPage = () => {
+  const repo = useTeamsRepo('foo');
+
   const { isLoading, mutate, isError, error } = useMutation<
     Response,
     Error,
     Team
-  >((newTeam) => createTeam('foo', newTeam));
+  >((newTeam) => repo.create(newTeam));
 
   const router = useRouter();
 

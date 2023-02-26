@@ -4,10 +4,9 @@ import Datepicker from 'react-datepicker';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQuery } from 'react-query';
 
-import { createGame } from '@/lib/apiInterface/gamesRepo';
-import { getTeams } from '@/lib/apiInterface/teamsRepo';
 import Game from '@/lib/models/game';
 import Team from '@/lib/models/team';
+import { useGamesRepo, useTeamsRepo } from '@/lib/repositories/ReposProvider';
 
 import Button from '@/components/buttons/Button';
 import ErrorText from '@/components/ErrorText';
@@ -22,12 +21,15 @@ interface GameFormInput {
 }
 
 const CreateGamePage = () => {
+  const teamsRepo = useTeamsRepo('foo');
+  const gamesRepo = useGamesRepo('foo');
+
   const {
     isLoading,
     isError,
     data: teams,
     error,
-  } = useQuery<Team[], Error>('teams', () => getTeams('foo'));
+  } = useQuery<Team[], Error>('teams', teamsRepo.list);
 
   const {
     isLoading: isSubmitting,
@@ -35,7 +37,7 @@ const CreateGamePage = () => {
     isError: isSubmitError,
     error: submitError,
   } = useMutation<Response, Error, Game & { teamId: string }>((newGame) =>
-    createGame(newGame.teamId, newGame)
+    gamesRepo.create(newGame.teamId, newGame)
   );
 
   const router = useRouter();

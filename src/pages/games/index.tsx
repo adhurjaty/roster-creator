@@ -1,19 +1,21 @@
 import { useQuery } from 'react-query';
 
-import { getTeams } from '@/lib/apiInterface/teamsRepo';
 import Team from '@/lib/models/team';
+import { useTeamsRepo } from '@/lib/repositories/ReposProvider';
 
 import GamesView from '@/components/GamesView';
 import Layout from '@/components/layout/Layout';
 import ButtonLink from '@/components/links/ButtonLink';
 
 const GamesPage = () => {
+  const teamsRepo = useTeamsRepo('foo');
+
   const {
     isLoading,
     isError,
     data: teams,
     error,
-  } = useQuery<Team[], Error>('teams', () => getTeams('foo'));
+  } = useQuery<Team[], Error>('teams', teamsRepo.list);
 
   const games =
     teams?.flatMap((team) =>

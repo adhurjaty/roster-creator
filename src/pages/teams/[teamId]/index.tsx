@@ -4,8 +4,8 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 
-import { getTeam, updateTeam } from '@/lib/apiInterface/teamsRepo';
 import Team from '@/lib/models/team';
+import { useTeamsRepo } from '@/lib/repositories/ReposProvider';
 
 import Button from '@/components/buttons/Button';
 import PositionsLayout from '@/components/contexts/PositionsLayout';
@@ -16,6 +16,8 @@ import ListView from '@/components/list/ListView';
 const TeamPage = () => {
   const [editMode, setEditMode] = useState(false);
 
+  const repo = useTeamsRepo('foo');
+
   const router = useRouter();
   const { teamId } = router.query;
 
@@ -24,14 +26,14 @@ const TeamPage = () => {
     isError,
     data: team,
     error,
-  } = useQuery<Team, Error>('team', () => getTeam('foo', teamId as string));
+  } = useQuery<Team, Error>('team', () => repo.get(teamId as string));
 
   const {
     isLoading: isUpdateLoading,
     mutate,
     isError: isUpdateError,
     error: updateError,
-  } = useMutation<Response, Error, Team>((team) => updateTeam('foo', team));
+  } = useMutation<Response, Error, Team>(repo.update);
 
   const onSubmit = (team: Team) => {
     mutate(team);

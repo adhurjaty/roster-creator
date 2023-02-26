@@ -1,21 +1,17 @@
 import Game from "@/lib/models/game";
+import { GamesRepo } from "@/lib/repositories/interfaces";
 
-interface GamesRepo {
-  createGame(game: Game): Promise<Response>;
-  getGame(gameId: string): Promise<Game>;
-}
+export default class StaticGamesRepo implements GamesRepo {
+  constructor(private userId: string) { }
 
-class StaticGamesRepo {
-  constructor(private userId: string, private teamId: string) { }
-
-  async createGame(game: Game): Promise<Response> {
+  async create(teamId: string, game: Game): Promise<Response> {
     console.log(this.userId);
-    console.log(this.teamId);
+    console.log(teamId);
     console.log(game);
     return await Promise.resolve(new Response());
   }
 
-  async getGame(gameId: string): Promise<Game> {
+  async get(gameId: string): Promise<Game> {
     return await Promise.resolve({
       id: gameId,
       name: 'vs. Aardvarks',

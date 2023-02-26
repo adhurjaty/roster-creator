@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 
-import { getPositions } from '@/lib/apiInterface/positionsRepo';
 import Position from '@/lib/models/position';
+import { usePositionsRepo } from '@/lib/repositories/ReposProvider';
 
 import PositionsContext from '@/components/contexts/PositionsContext';
 import Layout from '@/components/layout/Layout';
@@ -14,12 +14,14 @@ const PositionsLayout = ({
   error,
   ...rest
 }: LayoutProps) => {
+  const repo = usePositionsRepo();
+
   const {
     isLoading: isLoadingPositions,
     isError: isPositionsError,
     data: positions,
     error: positionsError,
-  } = useQuery<Position[], Error>('positions', getPositions);
+  } = useQuery<Position[], Error>('positions', () => repo?.list() ?? []);
 
   return (
     <Layout

@@ -1,20 +1,22 @@
 import React from 'react';
 import { useQuery } from 'react-query';
 
-import { getTeams } from '@/lib/apiInterface/teamsRepo';
 import Team from '@/lib/models/team';
+import { useTeamsRepo } from '@/lib/repositories/ReposProvider';
 
 import Layout from '@/components/layout/Layout';
 import ButtonLink from '@/components/links/ButtonLink';
 import ListView from '@/components/list/ListView';
 
 const TeamsPage = () => {
+  const repo = useTeamsRepo('foo');
+
   const {
     isLoading,
     isError,
     data: teams,
     error,
-  } = useQuery<Team[], Error>('teams', () => getTeams('foo'));
+  } = useQuery<Team[], Error>('teams', () => repo.list());
 
   return (
     <Layout title='Teams' isLoading={isLoading} isError={isError} error={error}>
