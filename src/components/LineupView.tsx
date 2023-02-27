@@ -1,27 +1,29 @@
 import Lineup from '@/lib/models/lineup';
 
+import Button from '@/components/buttons/Button';
 import ListView from '@/components/list/ListView';
 
 interface Props {
-  lineup: Lineup;
+  lineup?: Lineup;
 }
 
 const LineupView = ({ lineup }: Props) => (
   <>
-    <h2>Inning {lineup.period}</h2>
-    <ListView
-      list={lineup.playerPositions.map((pp) => ({
-        name: pp.player.name,
-        position: pp.position.name,
-      }))}
-    >
-      {(item) => (
-        <div className='flex justify-between'>
-          <div>{item.name}</div>
-          <div>{item.position}</div>
-        </div>
-      )}
-    </ListView>
+    {(lineup && (
+      <ListView
+        list={lineup.playerPositions.map((pp) => ({
+          name: pp.player.name,
+          position: pp.position.name,
+        }))}
+      >
+        {(item) => (
+          <div className='flex justify-between'>
+            <div>{item.name}</div>
+            <div>{item.position}</div>
+          </div>
+        )}
+      </ListView>
+    )) || <Button>+ Lineup</Button>}
   </>
 );
 

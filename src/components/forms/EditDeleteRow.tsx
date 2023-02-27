@@ -9,11 +9,17 @@ interface EditFormProps<T extends { name: string }> {
   onCancel: () => void;
 }
 
+interface DisplayProps {
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
 interface Props<T extends { name: string }> {
   value: T;
   onChange: (player: T) => void;
   onDelete: (player: T) => void;
   editForm: (props: EditFormProps<T>) => JSX.Element;
+  displayContent?: (props: DisplayProps) => JSX.Element;
   defaultEditMode?: boolean;
   error?: FieldError;
 }
@@ -24,6 +30,7 @@ const EditDeleteRow = <T extends { name: string }>({
   onChange,
   onDelete,
   editForm,
+  displayContent,
   error,
 }: Props<T>) => {
   const [editMode, setEditMode] = useState(defaultEditMode ?? false);
@@ -46,7 +53,10 @@ const EditDeleteRow = <T extends { name: string }>({
     }
   };
 
-  const displayRow = (
+  const displayRow = displayContent?.({
+    onEdit: () => setEditMode(true),
+    onDelete: () => onDelete(value),
+  }) ?? (
     <div className='flex justify-between align-middle'>
       <div className='self-center'>{value.name}</div>
       <div className='flex justify-end'>

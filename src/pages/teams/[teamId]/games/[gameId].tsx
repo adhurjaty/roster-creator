@@ -5,7 +5,7 @@ import Game from '@/lib/models/game';
 import { useGamesRepo } from '@/lib/repositories/ReposProvider';
 
 import Layout from '@/components/layout/Layout';
-import ListView from '@/components/list/ListView';
+import RosterView from '@/components/RosterView';
 
 const GamePage = () => {
   const router = useRouter();
@@ -27,10 +27,9 @@ const GamePage = () => {
       isError={isError}
       error={error}
     >
-      <>
-        <h4>Roster</h4>
-        <ListView list={game?.roster.players || []} />
-      </>
+      <div className='flex flex-col items-center'>
+        {game && <RosterView roster={game.roster} />}
+      </div>
     </Layout>
   );
 };

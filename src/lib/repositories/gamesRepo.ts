@@ -17,8 +17,43 @@ export default class StaticGamesRepo implements GamesRepo {
       name: 'vs. Aardvarks',
       date: new Date(2023, 3, 22, 12),
       roster: {
-        lineups: [],
-        players: []
+        players: [
+          {
+            name: 'Ari',
+            positions: [],
+          },
+          {
+            name: 'Dan',
+            positions: [],
+          },
+          {
+            name: 'Daniel',
+            positions: [],
+          },
+          {
+            name: 'Michael',
+            positions: [],
+          },
+        ],
+        lineups: [
+          {
+            period: 1,
+            playerPositions: [
+              {
+                player: { name: 'Ari', positions: [] },
+                position: { name: 'Pitcher' }
+              },
+              {
+                player: { name: 'Dan', positions: [] },
+                position: { name: 'Catcher' }
+              },
+            ]
+          },
+          {
+            period: 2,
+            playerPositions: []
+          },
+        ],
       }
     });
   }
