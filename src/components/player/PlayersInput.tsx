@@ -10,7 +10,7 @@ import Player from '@/lib/models/player';
 
 import Button from '@/components/buttons/Button';
 import EditDeleteRow from '@/components/forms/EditDeleteRow';
-import EditPlayer from '@/components/forms/EditPlayer';
+import EditPlayer from '@/components/player/EditPlayer';
 
 interface PlayersInput {
   players: Player[];

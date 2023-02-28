@@ -4,8 +4,8 @@ import Roster from '@/lib/models/roster';
 
 import Button from '@/components/buttons/Button';
 import NextPrevButton from '@/components/buttons/NextPrevButton';
-import LineupView from '@/components/LineupView';
 import ListView from '@/components/list/ListView';
+import LineupView from '@/components/roster/LineupView';
 
 interface Props {
   roster: Roster;
@@ -15,14 +15,12 @@ const RosterView = ({ roster }: Props) => {
   const [inning, setInning] = useState(1);
   const [rosterEditMode, setRosterEditMode] = useState(false);
 
+  const currentLineup = roster.lineups.find((x) => x.period === inning);
+
   return (
     <div className='flex flex-col items-center'>
       <h3>Roster</h3>
-      {(rosterEditMode && (
-        <>
-          <Button onClick={() => setRosterEditMode(false)}>Save</Button>
-        </>
-      )) || (
+      {(rosterEditMode && <Button>foo</Button>) || (
         <>
           <ListView list={roster.players || []} />
           <Button onClick={() => setRosterEditMode(true)}>Edit Roster</Button>
@@ -34,10 +32,11 @@ const RosterView = ({ roster }: Props) => {
         <NextPrevButton
           onPrev={() => setInning(inning - 1)}
           onNext={() => setInning(inning + 1)}
+          disableNext={inning >= roster.lineups.length}
           disablePrev={inning <= 1}
         />
       </div>
-      <LineupView lineup={roster.lineups.find((l) => l.period === inning)} />
+      {currentLineup && <LineupView lineup={currentLineup} />}
     </div>
   );
 };

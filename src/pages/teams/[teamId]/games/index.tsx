@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 import Team from '@/lib/models/team';
 import { useTeamsRepo } from '@/lib/repositories/ReposProvider';
 
-import GamesView from '@/components/GamesView';
+import GamesView from '@/components/game/GamesView';
 import Layout from '@/components/layout/Layout';
 import ButtonLink from '@/components/links/ButtonLink';
 

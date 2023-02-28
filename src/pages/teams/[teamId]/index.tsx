@@ -10,7 +10,7 @@ import { useTeamsRepo } from '@/lib/repositories/ReposProvider';
 import Button from '@/components/buttons/Button';
 import PositionsLayout from '@/components/contexts/PositionsLayout';
 import TeamForm from '@/components/forms/TeamForm';
-import GamesView from '@/components/GamesView';
+import GamesView from '@/components/game/GamesView';
 import ListView from '@/components/list/ListView';
 
 const TeamPage = () => {

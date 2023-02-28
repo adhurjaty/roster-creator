@@ -5,7 +5,7 @@ import Game from '@/lib/models/game';
 import { useGamesRepo } from '@/lib/repositories/ReposProvider';
 
 import Layout from '@/components/layout/Layout';
-import RosterView from '@/components/RosterView';
+import RosterView from '@/components/roster/RosterView';
 
 const GamePage = () => {
   const router = useRouter();

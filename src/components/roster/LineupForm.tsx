@@ -1,29 +1,28 @@
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
+import Lineup from '@/lib/models/lineup';
 import Player from '@/lib/models/player';
-import Team from '@/lib/models/team';
+import Position from '@/lib/models/position';
 
 import Button from '@/components/buttons/Button';
 import ErrorText from '@/components/ErrorText';
-import TextInput from '@/components/forms/TextInput';
-import PlayersInput from '@/components/player/PlayersInput';
+import LineupInput from '@/components/roster/LineupInput';
 
-interface TeamFormInput {
-  name: string;
-  players: Player[];
+interface LineupFormInput {
+  playerPositions: { player: Player; position: Position }[];
 }
 
 interface Props {
-  team: Team;
-  onSubmit: (team: Team) => void;
+  lineup: Lineup;
+  onSubmit: (lineup: Lineup) => void;
   onCancel: () => void;
-  isSubmitLoading: boolean;
-  isSubmitError: boolean;
-  submitError: Error | null;
+  isSubmitLoading?: boolean;
+  isSubmitError?: boolean;
+  submitError?: Error | null;
 }
 
-const TeamForm = ({
-  team,
+const LineupForm = ({
+  lineup,
   onSubmit,
   onCancel,
   isSubmitLoading,
@@ -34,16 +33,15 @@ const TeamForm = ({
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<TeamFormInput>({
+  } = useForm<LineupFormInput>({
     defaultValues: {
-      name: team.name,
-      players: team.players,
+      playerPositions: lineup.playerPositions,
     },
   });
 
-  const localOnSubmit: SubmitHandler<TeamFormInput> = (data) => {
+  const localOnSubmit: SubmitHandler<LineupFormInput> = (data) => {
     onSubmit({
-      ...team,
+      ...lineup,
       ...data,
     });
   };
@@ -55,26 +53,17 @@ const TeamForm = ({
     >
       <Controller
         control={control}
-        name='name'
-        rules={{
-          required: { value: true, message: 'Must enter team name' },
-          maxLength: { value: 40, message: 'Name is too long' },
-        }}
-        render={({ field }) => (
-          <TextInput label='Name' error={errors.name} {...field} />
-        )}
-      />
-      <Controller
-        control={control}
-        name='players'
+        name='playerPositions'
         rules={{
           validate: (players) => players.length > 0 || 'Must add players',
         }}
         render={({ field }) => (
-          <PlayersInput value={field.value} onChange={field.onChange} />
+          <LineupInput value={field.value} onChange={field.onChange} />
         )}
       />
-      {errors.players && <ErrorText text={errors.players.message ?? ''} />}
+      {errors.playerPositions && (
+        <ErrorText text={errors.playerPositions.message ?? ''} />
+      )}
       <div className='my-2 flex flex-row justify-end'>
         <Button isLoading={isSubmitLoading} submit>
           Submit
@@ -88,4 +77,4 @@ const TeamForm = ({
   );
 };
 
-export default TeamForm;
+export default LineupForm;
