@@ -5,7 +5,7 @@ import ErrorText from '@/components/ErrorText';
 
 interface Props extends React.ComponentPropsWithoutRef<'select'> {
   label: string;
-  options: { id: string; name: string }[];
+  options: { id?: string; name: string }[];
   error?: FieldError;
 }
 
@@ -25,7 +25,7 @@ const SelectInput = forwardRef(
       >
         <option value=''>{`Choose a ${label}...`}</option>
         {options.map((option) => (
-          <option key={option.id} value={option.id}>
+          <option key={option.id ?? option.name} value={option.id}>
             {option.name}
           </option>
         ))}

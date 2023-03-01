@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import Roster from '@/lib/models/roster';
 
-import Button from '@/components/buttons/Button';
 import NextPrevButton from '@/components/buttons/NextPrevButton';
 import ListView from '@/components/list/ListView';
 import LineupView from '@/components/roster/LineupView';
@@ -13,19 +12,13 @@ interface Props {
 
 const RosterView = ({ roster }: Props) => {
   const [inning, setInning] = useState(1);
-  const [rosterEditMode, setRosterEditMode] = useState(false);
 
   const currentLineup = roster.lineups.find((x) => x.period === inning);
 
   return (
     <div className='flex flex-col items-center'>
       <h3>Roster</h3>
-      {(rosterEditMode && <Button>foo</Button>) || (
-        <>
-          <ListView list={roster.players || []} />
-          <Button onClick={() => setRosterEditMode(true)}>Edit Roster</Button>
-        </>
-      )}
+      <ListView list={roster.players || []} />
       <h3 className='mt-4'>Lineups</h3>
       <div className='mb-2 flex w-full justify-between'>
         <h4>Inning {inning}</h4>

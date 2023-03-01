@@ -45,10 +45,12 @@ export default class StaticTeamsRepo implements TeamsRepo {
       name: "Team1",
       players: [
         {
+          id: "1",
           name: "Daniel",
           positions: []
         },
         {
+          id: "2",
           name: "Ari",
           positions: []
         }
