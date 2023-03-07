@@ -45,24 +45,25 @@ const EditPlayerPosition = ({
         control={control}
         name='position'
         rules={{
-          required: { value: true, message: 'Must enter player name' },
+          required: { value: true, message: 'Must enter a position' },
         }}
         render={({ field }) => (
           <SelectInput
             label='Position'
             options={allPositions}
             error={errors.position as FieldError}
-            value={field.value.name}
-            onChange={field.onChange}
+            value={field.value.id}
+            onChange={(e) =>
+              field.onChange(allPositions.find((x) => x.id === e.target.value))
+            }
           />
         )}
       />
-      {errors.position && <ErrorText text={errors.position.message ?? ''} />}
       <div className='flex'>
         <Button
-          onClick={() =>
-            handleSubmit(({ position }) => onChange({ player, position }))
-          }
+          onClick={() => {
+            handleSubmit(({ position }) => onChange({ player, position }))();
+          }}
         >
           Save
         </Button>

@@ -4,6 +4,7 @@ import Team from "@/lib/models/team";
 
 export interface GamesRepo {
   create(teamId: string, game: Game): Promise<Response>;
+  update(game: Game): Promise<Response>;
   get(gameId: string): Promise<Game>;
 }
 

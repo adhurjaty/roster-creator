@@ -11,6 +11,11 @@ export default class StaticGamesRepo implements GamesRepo {
     return await Promise.resolve(new Response());
   }
 
+  async update(game: Game): Promise<Response> {
+    console.log(game);
+    return await Promise.resolve(new Response());
+  }
+
   async get(gameId: string): Promise<Game> {
     return await Promise.resolve({
       id: gameId,

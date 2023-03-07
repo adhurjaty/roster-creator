@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 
 import Game from '@/lib/models/game';
 import Team from '@/lib/models/team';
 import { useGamesRepo, useTeamsRepo } from '@/lib/repositories/ReposProvider';
 
 import Button from '@/components/buttons/Button';
-import Layout from '@/components/layout/Layout';
+import PositionsLayout from '@/components/contexts/PositionsLayout';
 import RosterForm from '@/components/roster/RosterForm';
 import RosterView from '@/components/roster/RosterView';
 
@@ -34,8 +34,15 @@ const GamePage = () => {
     error: teamError,
   } = useQuery<Team, Error>('team', () => teamsRepo.get(teamId as string));
 
+  const {
+    isLoading: isSubmitting,
+    isError: isSubmitError,
+    mutate,
+    error: submitError,
+  } = useMutation<Response, Error, Game>(gamesRepo.update);
+
   return (
-    <Layout
+    <PositionsLayout
       title={`Game ${game?.name}`}
       isLoading={isLoadingGame || isLoadingTeam}
       isError={isErrorGame || isErrorTeam}
@@ -44,7 +51,19 @@ const GamePage = () => {
       <div className='flex flex-col items-center'>
         {game &&
           ((editMode && team && (
-            <RosterForm team={team} roster={game.roster} />
+            <RosterForm
+              team={team}
+              roster={game.roster}
+              onCancel={() => setEditMode(false)}
+              onSubmit={(roster) =>
+                mutate({
+                  ...game,
+                  roster,
+                })
+              }
+              isError={isSubmitError}
+              isLoading={isSubmitting}
+            />
           )) || (
             <>
               <RosterView roster={game.roster} />
@@ -52,7 +71,7 @@ const GamePage = () => {
             </>
           ))}
       </div>
-    </Layout>
+    </PositionsLayout>
   );
 };
 

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import Lineup from '@/lib/models/lineup';
@@ -7,8 +6,8 @@ import Roster from '@/lib/models/roster';
 import Team from '@/lib/models/team';
 
 import Button from '@/components/buttons/Button';
-import NextPrevButton from '@/components/buttons/NextPrevButton';
 import ErrorText from '@/components/ErrorText';
+import LineupsForm from '@/components/roster/LineupsForm';
 import RosterPlayersForm from '@/components/roster/RosterPlayersForm';
 
 interface RosterInput {
@@ -35,8 +34,6 @@ const RosterForm = ({
   isError,
   error,
 }: Props) => {
-  const [inning, setInning] = useState(1);
-
   const {
     control,
     handleSubmit,
@@ -47,11 +44,6 @@ const RosterForm = ({
       lineups: roster.lineups,
     },
   });
-
-  const currentLineup = roster.lineups.find((x) => x.period === inning);
-  // const remainingPlayers = team.players.filter(
-  //   (p) => !playerFields.map((f) => f.id).includes(p.id ?? '')
-  // );
 
   return (
     <div className='flex flex-col items-center'>
@@ -68,17 +60,18 @@ const RosterForm = ({
           )}
         />
         {errors.players && <ErrorText text={errors.players.message ?? ''} />}
-        <h3 className='mt-4'>Lineups</h3>
-        <div className='mb-2 flex w-full justify-between'>
-          <h4>Inning {inning}</h4>
-          <NextPrevButton
-            onPrev={() => setInning(inning - 1)}
-            onNext={() => setInning(inning + 1)}
-            disableNext={!currentLineup}
-            disablePrev={inning <= 1}
-          />
-        </div>
-        {/* {currentLineup && <LineupView lineup={currentLineup} />} */}
+        <Controller
+          control={control}
+          name='lineups'
+          render={({ field }) => (
+            <LineupsForm
+              value={field.value}
+              rosterPlayers={roster.players}
+              onChange={field.onChange}
+            />
+          )}
+        />
+        {errors.lineups && <ErrorText text={errors.lineups.message ?? ''} />}
         <div className='my-2 flex flex-row justify-end'>
           <Button isLoading={isLoading} submit>
             Submit

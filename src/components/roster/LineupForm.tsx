@@ -11,7 +11,6 @@ import Player from '@/lib/models/player';
 import Position from '@/lib/models/position';
 
 import Button from '@/components/buttons/Button';
-import ErrorText from '@/components/ErrorText';
 import EditDeleteRow from '@/components/forms/EditDeleteRow';
 import EditPlayerPosition from '@/components/roster/EditPlayerPosition';
 
@@ -28,14 +27,7 @@ interface Props {
   submitError?: Error | null;
 }
 
-const LineupForm = ({
-  value: lineup,
-  onChange,
-  onCancel,
-  isSubmitLoading,
-  isSubmitError,
-  submitError,
-}: Props) => {
+const LineupForm = ({ value: lineup, onChange }: Props) => {
   const {
     handleSubmit,
     control,
@@ -46,7 +38,7 @@ const LineupForm = ({
     },
   });
 
-  const { fields, append, remove } = useFieldArray<LineupInput>({
+  const { fields, remove } = useFieldArray<LineupInput>({
     control,
     name: 'playerPositions',
   });
@@ -92,24 +84,27 @@ const LineupForm = ({
                       error={error}
                     />
                   )}
+                  displayContent={({ onEdit, onDelete }) => (
+                    <div className='flex justify-between align-middle'>
+                      <div className='flex flex-col'>
+                        <div>{field.value.player.name}</div>
+                        <hr />
+                        <div>{field.value.position.name}</div>
+                      </div>
+                      <div className='flex justify-end'>
+                        <Button onClick={onEdit}>Edit</Button>
+                        <Button variant='alert' onClick={onDelete}>
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 />
               );
             }}
           />
         ))}
       </ul>
-      {!errors.players?.find?.((x) => x) && (
-        <Button onClick={() => append(defaultPlayer)}>+ Player</Button>
-      )}
-      <div className='my-2 flex flex-row justify-end'>
-        <Button isLoading={isSubmitLoading} submit>
-          Submit
-        </Button>
-        <Button variant='alert' onClick={onCancel}>
-          Cancel
-        </Button>
-      </div>
-      {isSubmitError && <ErrorText text={submitError?.message ?? ''} />}
     </>
   );
 };

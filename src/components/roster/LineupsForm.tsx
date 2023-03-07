@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Controller,
   ControllerRenderProps,
@@ -7,6 +7,7 @@ import {
 } from 'react-hook-form';
 
 import Lineup from '@/lib/models/lineup';
+import Player from '@/lib/models/player';
 
 import Button from '@/components/buttons/Button';
 import NextPrevButton from '@/components/buttons/NextPrevButton';
@@ -19,14 +20,24 @@ interface LineupsInput {
 interface Props {
   value: Lineup[];
   onChange: (lineup: Lineup[]) => void;
+  rosterPlayers: Player[];
 }
 
-const LineupsForm = ({ value: lineups, onChange }: Props) => {
+const defaultPlayerPositions = (players: Player[]) =>
+  players.map((player) => ({
+    player,
+    position: {
+      name: 'Bench',
+    },
+  }));
+
+const LineupsForm = ({ value: lineups, onChange, rosterPlayers }: Props) => {
   const [inning, setInning] = useState(1);
 
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<LineupsInput>({
     defaultValues: {
@@ -39,6 +50,12 @@ const LineupsForm = ({ value: lineups, onChange }: Props) => {
     name: 'lineups',
   });
 
+  const watchLineup = watch('lineups');
+
+  useEffect(() => {
+    onChange(watchLineup);
+  }, [watchLineup, onChange]);
+
   const onUpdatePlayerPositionFn =
     (field: ControllerRenderProps<LineupsInput, `lineups.${number}`>) =>
     (lineup: Lineup) => {
@@ -49,7 +66,7 @@ const LineupsForm = ({ value: lineups, onChange }: Props) => {
     };
 
   const index = inning - 1;
-  const currentField = inning <= lineups.length ? fields.at(index) : null;
+  const currentItem = index < fields.length ? fields.at(index) : null;
 
   return (
     <>
@@ -59,27 +76,42 @@ const LineupsForm = ({ value: lineups, onChange }: Props) => {
         <NextPrevButton
           onPrev={() => setInning(inning - 1)}
           onNext={() => setInning(inning + 1)}
-          disableNext={!currentField}
+          disableNext={!currentItem}
           disablePrev={inning <= 1}
         />
       </div>
-      {(currentField && (
+      {(currentItem && (
         <>
           <Controller
             control={control}
-            name={`lineups.${inning - 1}`}
-            key={currentField.id}
+            name={`lineups.${index}`}
+            key={currentItem.id}
             render={({ field }) => (
-              <LineupForm value={field.value} onChange={field.onChange} />
+              <LineupForm
+                value={field.value}
+                onChange={onUpdatePlayerPositionFn(field)}
+                onCancel={() => {
+                  return;
+                }}
+              />
             )}
           />
-          {index === lineups.length - 1 && (
+          {inning === fields.length && (
             <Button onClick={() => remove(index)}>Delete</Button>
           )}
         </>
       )) ||
         (!errors.lineups?.at?.(index) && (
-          <Button onClick={() => append([])}>+ Player</Button>
+          <Button
+            onClick={() =>
+              append({
+                period: inning,
+                playerPositions: defaultPlayerPositions(rosterPlayers),
+              })
+            }
+          >
+            + Lineup
+          </Button>
         ))}
     </>
   );
