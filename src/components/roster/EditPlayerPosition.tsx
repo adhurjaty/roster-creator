@@ -44,9 +44,6 @@ const EditPlayerPosition = ({
       <Controller
         control={control}
         name='position'
-        rules={{
-          required: { value: true, message: 'Must enter a position' },
-        }}
         render={({ field }) => (
           <SelectInput
             label='Position'

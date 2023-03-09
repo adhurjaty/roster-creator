@@ -14,8 +14,13 @@ import Button from '@/components/buttons/Button';
 import EditDeleteRow from '@/components/forms/EditDeleteRow';
 import EditPlayerPosition from '@/components/roster/EditPlayerPosition';
 
+interface PlayerPosition {
+  player: Player;
+  position: Position;
+}
+
 interface LineupInput {
-  playerPositions: { player: Player; position: Position }[];
+  playerPositions: PlayerPosition[];
 }
 
 interface Props {
@@ -84,7 +89,7 @@ const LineupForm = ({ value: lineup, onChange }: Props) => {
                       error={error}
                     />
                   )}
-                  displayContent={({ onEdit, onDelete }) => (
+                  displayContent={({ onEdit }) => (
                     <div className='flex justify-between align-middle'>
                       <div className='flex flex-col'>
                         <div>{field.value.player.name}</div>
@@ -93,9 +98,6 @@ const LineupForm = ({ value: lineup, onChange }: Props) => {
                       </div>
                       <div className='flex justify-end'>
                         <Button onClick={onEdit}>Edit</Button>
-                        <Button variant='alert' onClick={onDelete}>
-                          Delete
-                        </Button>
                       </div>
                     </div>
                   )}

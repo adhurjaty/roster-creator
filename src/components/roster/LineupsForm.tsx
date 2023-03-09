@@ -28,6 +28,7 @@ const defaultPlayerPositions = (players: Player[]) =>
     player,
     position: {
       name: 'Bench',
+      order: Infinity,
     },
   }));
 
